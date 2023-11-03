@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Invoice</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Scaneie e pague o invoice abaixo para liberar a cerveja</h1>
+    <img src="{{ qr_code }}" alt="QR Code">
+    <p>se o back ta funcionando, curte a brisa</p>
+
+    <script>
+        function checkPayment() {
+            $.get('/check_invoice/{{ r_hash }}', function(data) {
+                if (data.status === 'SETTLED') {
+                    location.reload();  // Recarrega a página para obter um novo QR Code
+                }
+            });
+        }
+
+        setInterval(checkPayment, 5000);  // Verifica o pagamento a cada 5 segundos
+    </script>
+</body>
+</html>

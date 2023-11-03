@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Invoice</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-image: url("/static/cerveja_background.gif");
+            background-size: cover;
+            color: #000;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .fullscreen-gif {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo preto com opacidade */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Garantir que fique no topo */
+        }
+
+        .fullscreen-gif img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .container {
+            text-shadow:
+                -1px -1px 0 #ffffff,
+                1px -1px 0 #ffffff,
+                -1px 1px 0 #ffffff,
+                1px 1px 0 #ffffff;
+            padding: 50px;
+        }
+        .container h1 {
+            font-size: 45px;
+        }
+        .container p {
+            font-size: 25px;
+        }
+        
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .image-container {
+            width: 245px;
+            height: 245px;
+            display: inline-block;
+        }
+
+        .qr-code {
+            width: 35%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingGif" class="fullscreen-gif">
+        <img src="/static/raio.gif" width=100% height=100% alt="Carregando...">
+    </div>
+
+    <div class="container">
+        <br><br><br><br><br><br><br><br>
+        <h1>Scan the QR code and enjoy your beer!</h1>
+        <div class="image-container">
+            <img src="/static/beer_transparent.png" alt="Imagem 1">
+        </div>
+        <div class="qr-code">
+            <img src="{{ qr_code }}" alt="QR Code"> 
+        </div>
+        <p>Have Fun Staying High!</p>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const loadingGif = document.getElementById("loadingGif");
+
+            // Ocultar o GIF após 5 segundos ou após o carregamento completo da página
+            setTimeout(function() {
+                loadingGif.style.display = "none";
+                document.body.style.overflow = "auto"; // Restaurar a rolagem
+            }, 1000);
+        });
+
+        function checkPayment() {
+            $.get('/check_invoice/{{ r_hash }}', function(data) {
+                if (data.status === 'SETTLED') {
+                    location.reload();  // Recarrega a página para obter um novo QR Code
+                }
+            });
+        }
+
+        setInterval(checkPayment, 2000);  // Verifica o pagamento a cada 5 segundos
+    </script>
+</body>
+</html>
